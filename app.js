@@ -14,6 +14,7 @@ env.load();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 app.use(session({secret: process.env.SECRET, resave: true, saveUninitialized: true}));
 app.use(express.static('public'));
 app.set('views', __dirname + '/views');
@@ -30,11 +31,25 @@ app.get('/sign-up', function(req, res, next) {
 });
 
 app.post('/login', function(req, res, next) {
-  res.redirect('/chat-room');
+  User.find(req.body.email, function(error, user){
+    if(user.isValid(req.body.password)){
+      return res
+      .status(302)
+      .redirect('/chat-room');
+    }
+  })
 });
 
 app.post('/sign-up', function(req, res, next) {
-  res.redirect('/chat-room');
+  User.find(req.body.email, function(error, user){
+    var user = new User(req.body)
+    user.save(function(error, ok){
+      if(error) { return next(error) }
+      return res
+      .status(302)
+      .redirect('/chat-room');
+    })
+  })
 });
 
 app.get('/chat-room', function(req, res, next) {
