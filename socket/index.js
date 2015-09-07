@@ -22,7 +22,9 @@ function setupIO(http) {
     handshake: true
   }));
 
-  io.on('error', logger.error);
+  io.on('error', function(error) {
+    console.log(error);
+  });
   io.on('connection', onConnection);
 
   return io;
