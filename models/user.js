@@ -18,12 +18,6 @@ var userSchema = {
   required: ['email', 'password']
 }
 
-/**
- * Hasher function to calculate password hash
- * @param  {[String]} password
- * @param  {[Sting]}  salt
- * @return {[Sting]}  Hash
- */
 function hasher (password, salt) {
   var hash = crypto.createHash('sha512')
   hash.update(password)
@@ -63,6 +57,7 @@ User.find = function(email, next){
     if(error) { next(error) }
     if(user) {
       user.__proto__ = User.prototype
+
       next(null, user)
     } else {
       next(null, null)
