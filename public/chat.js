@@ -44,7 +44,6 @@ function addMessageText(message) {
   if(message.match(/^\/giphy/)) {
     var keywords = message.replace(/^\/giphy/g, '').trim();
     $.get(giphyUrl+keywords, function(result) {
-      console.log(result);
       appendHistory("<img src='" + result.data.fixed_width_small_url + "'/>");
     })
   } else {
@@ -58,7 +57,6 @@ function clearTextInput() {
 
 function bindTxtMessageTo(socket) {
   $('#txt-message').keypress(function (e) {
-    console.log(e.which);
     if (e.which == 13) {
       newMessage(socket)
       return false
