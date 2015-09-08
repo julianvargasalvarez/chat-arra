@@ -42,7 +42,7 @@ function newMessage(socket) {
 }
 
 function addMessageText(message) {
-  $("#messages-history").append("<li>"+message+"</li>")
+  $("#chat-history").append("<li>"+message+"</li>")
 }
 
 function clearTextInput() {

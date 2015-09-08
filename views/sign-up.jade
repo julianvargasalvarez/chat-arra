@@ -1,15 +1,15 @@
-h1 Welcome to chat arra
+extends ./base.jade
+block content
+  a(href="/") Login
 
-a(href="/") Login
+  form(action="/sign-up", method="post")
+    label(for="email") Email
+    input#email(type="email", name="email")
 
-form(action="/sign-up", method="post")
-  label(for="email") Email
-  input#email(type="email", name="email")
+    label(for="password") Password
+    input#password(type="password", name="password")
 
-  label(for="password") Password
-  input#password(type="password", name="password")
+    label(for="password_confirmation") Password confirmation
+    input#password_confirmation(type="password", name="password_confirmation")
 
-  label(for="password_confirmation") Password
-  input#password_confirmation(type="password", name="password_confirmation")
-
-  input(type="submit", value="Log in")
+    input(type="submit", value="Log in")
