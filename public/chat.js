@@ -1,3 +1,5 @@
+var giphyUrl = 'http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=';
+
 $(document).ready(function() {
   if(authToken()){
     socketAuth();
@@ -39,7 +41,15 @@ function newMessage(socket) {
 }
 
 function addMessageText(message) {
-  $("#chat-history").append("<li>"+message+"</li>")
+  if(message.match(/^\/giphy/)) {
+    var keywords = message.replace(/^\/giphy/g, '').trim();
+    $.get(giphyUrl+keywords, function(result) {
+      console.log(result);
+      appendHistory("<img src='" + result.data.fixed_width_small_url + "'/>");
+    })
+  } else {
+    appendHistory(message);
+  }
 }
 
 function clearTextInput() {
@@ -54,4 +64,8 @@ function bindTxtMessageTo(socket) {
       return false
     }
   });
+}
+
+function appendHistory(message) {
+  return $("#chat-history").append("<li>"+message+"</li>");
 }
