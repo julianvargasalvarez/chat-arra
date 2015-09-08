@@ -6,7 +6,6 @@ var User = require('./models/user');
 var bodyParser = require('body-parser');
 var session = require('express-session');
 var env = require('dotenv');
-var cors = require('cors');
 var jwt = require('express-jwt');
 var socket = require('./socket');
 
@@ -14,7 +13,6 @@ env.load();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(cors());
 app.use(session({secret: process.env.SECRET, resave: true, saveUninitialized: true}));
 app.use(express.static('public'));
 app.set('views', __dirname + '/views');
