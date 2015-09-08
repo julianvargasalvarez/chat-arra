@@ -1,7 +1,4 @@
-var user = { }
-
 $(document).ready(function() {
-  user = $('.user-data').data('user');
   if(authToken()){
     socketAuth();
   }
@@ -51,6 +48,7 @@ function clearTextInput() {
 
 function bindTxtMessageTo(socket) {
   $('#txt-message').keypress(function (e) {
+    console.log(e.which);
     if (e.which == 13) {
       newMessage(socket)
       return false
