@@ -11,6 +11,11 @@ function onConnection(socket) {
   socket.on('general', function(message){
     socket.broadcast.emit('general', { username: socket.decoded_token.email, message: message});
   })
+
+  socket.on('new-user', function(message){
+    console.log(message);
+    socket.broadcast.emit('new-user', message);
+  })
 }
 
 function setupIO(http) {

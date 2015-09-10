@@ -12,24 +12,34 @@ function socketAuth(){
   socket = io.connect("http://localhost:3000/", { query: 'token=' + authToken() });
   console.log("Listo, creado el socket de la linea 13", socket);
 
-  socket.on('error', function(error){
-    console.log("Error:", error)
-  })
+  socket.on('error', function(error){ console.log("Error:", error) })
 
   socket.on('connect', function(){
     console.log("Listo, conectado");
     bindTxtMessageTo(socket);
 
-    socket.on('general', function(info){
-      addMessageText(info.message);
-      console.log(info)
-    })
-
+    connectToChannels(socket);
   })
+}
+
+function connectToChannels(socket) {
+  var privateChannel = getParameterByName('private-channel');
+  if(privateChannel) {
+    socket.emit('new-private-channel', privateChannel);
+    socket.on(privateChannel, function(data) { addMessageText(data.message); });
+  } else {
+    socket.emit('new-user', userEmail());
+    socket.on('general',  function(data){ addMessageText(data.message); })
+    socket.on('new-user', function(data){ addNewUser(data);             })
+  }
 }
 
 function authToken() {
   return $('.user-data').data('token');
+}
+
+function userEmail() {
+  return $('.user-data').data('user').email;
 }
 
 function newMessage(socket) {
@@ -66,4 +76,15 @@ function bindTxtMessageTo(socket) {
 
 function appendHistory(message) {
   return $("#chat-history").append("<li>"+message+"</li>");
+}
+
+function addNewUser(user) {
+  return $("#users").append("<li>"+user+"</li>");
+}
+
+function getParameterByName(name) {
+  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+  var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+      results = regex.exec(location.search);
+  return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
 }
