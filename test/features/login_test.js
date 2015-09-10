@@ -1,45 +1,61 @@
-process.env.PORT = 3000
-process.env.NODE_ENV = 'test'
-
-var server = require('../../app');
-var supertest = require('supertest');
-var request = supertest(server);
-var expect = require('chai').expect;
+process.env.NODE_ENV = 'test';
+var app = require('../../app');
+var http = require('http');
+var assert = require('assert');
+var Browser = require('zombie');
 var User = require('../../models/user');
 
-describe('Login into chat-arra', function(){
-  before(function(done){
-    var user = new User({email:'myuser@gmail.com', password:'12345'})
-    user.save(function(error, ok){
-      done();
-    })
-  })
+describe('contact page', function() {
 
-  it('should existing users to login', function(done){
-    request
-      .post('/login')
-      .send({username:'david', password:'badPassword'})
-      .expect(401)
-      .end(done)
-  })
+  before(function(done) {
+    this.server = http.createServer(app).listen(5000);
+    this.browser = new Browser({ site: 'http://localhost:5000' });
+    var user = new User({email:'user@gmail.com', password:'123'});
+    return user.save(function(err, success) { console.log("el resultado", err, success); return done(); });
+  });
 
-  it('should authenticate valid credentials', function(done){
-    request
-    .post('/login')
-    .send({username:'david', password:'password'})
-    .expect(200)
-    .end(function(err, res){
-      if (err) return done(err)
-      expect(res.body).to.have.property('token')
-      done()
-    })
-  })
+  beforeEach(function(done) {
+    this.browser.visit('/', done);
+  });
 
-  after(function(done){
-    User.findByUsername('david', function(error, user){
-      user.delete(function(error, ok){
-        done()
-      })
-    })
-  })
-})
+  it('should show the login form', function() {
+    assert.ok(this.browser.success);
+  });
+
+  it('should refuse empty submissions', function(done) {
+    var browser = this.browser;
+    browser.pressButton('Log in').then(function() {
+      assert.ok(browser.success);
+      browser.assert.url('http://localhost:5000/');
+    }).then(done, done);
+  });
+
+  it('should allow registered users to log in', function(done) {
+    var browser = this.browser;
+    
+    browser.fill('email', 'user@gmail.com');
+    browser.fill('password', '123');
+
+    browser.pressButton('Log in').then(function() {
+      assert.ok(browser.success);
+      browser.assert.url('http://localhost:5000/chat-room');
+    }).then(done, done);
+  });
+
+  it('should not allow wrong credentials to log in', function(done) {
+    var browser = this.browser;
+    
+    browser.fill('email', 'user@gmail.com');
+    browser.fill('password', '123');
+
+    browser.pressButton('Log in').then(function() {
+      assert.ok(browser.success);
+      browser.assert.url('http://localhost:5000/');
+    }).then(done, done);
+  });
+
+  after(function(done) {
+    return done();
+  });
+
+});
