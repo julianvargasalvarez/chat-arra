@@ -16,6 +16,11 @@ function onConnection(socket) {
     console.log(message);
     socket.broadcast.emit('new-user', message);
   })
+
+  socket.on('new-private-channel', function(message){
+    console.log(message);
+    socket.broadcast.emit('new-private-channel', message);
+  })
 }
 
 function setupIO(http) {

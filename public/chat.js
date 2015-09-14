@@ -27,11 +27,17 @@ function connectToChannels(socket) {
   if(privateChannel) {
     socket.emit('new-private-channel', privateChannel);
     socket.on(privateChannel, function(data) { addMessageText(data.message); });
+    socket.on(userEmail(), function(data) { add_messageText(data.message); });
   } else {
     socket.emit('new-user', userEmail());
     socket.on('general',  function(data){ addMessageText(data.message); })
-    socket.on('new-user', function(data){ addNewUser(data);             })
+    socket.on('new-user', function(data){ addNewUser(data); })
+    socket.on('message-from-someone', function(data){ incomingMessage(data); })
   }
+}
+
+function incomingMessage(data) {
+  console.log(data);  
 }
 
 function authToken() {
@@ -79,7 +85,7 @@ function appendHistory(message) {
 }
 
 function addNewUser(user) {
-  return $("#users").append("<li>"+user+"</li>");
+  return $("#users").append("<li><a href='?p="+user+"' target='_blank'>"+user+"</a></li>");
 }
 
 function getParameterByName(name) {
